@@ -32,8 +32,8 @@ class AlbumPage extends StatefulWidget {
 class _AlbumPageState extends State<AlbumPage> {
   late Future<List<Album>> futureAlbums;
 
-  // Stores the currently selected album
   Album? selectedAlbum;
+  bool isDeleting = false;
 
   @override
   void initState() {
@@ -52,6 +52,50 @@ class _AlbumPageState extends State<AlbumPage> {
       return data.map((json) => Album.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load albums');
+    }
+  }
+
+  // Delete the selected album
+  Future<void> deleteAlbum() async {
+    if (selectedAlbum == null) return;
+
+    final albumId = selectedAlbum!.id;
+
+    setState(() {
+      isDeleting = true;
+    });
+
+    try {
+      final response = await http.delete(
+        Uri.parse(
+          'https://jsonplaceholder.typicode.com/albums/$albumId',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          selectedAlbum = null;
+          isDeleting = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Album deleted successfully!'),
+          ),
+        );
+      } else {
+        throw Exception('Failed to delete album');
+      }
+    } catch (error) {
+      setState(() {
+        isDeleting = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting album: $error'),
+        ),
+      );
     }
   }
 
@@ -85,6 +129,15 @@ class _AlbumPageState extends State<AlbumPage> {
                       ),
                       Text('Album ID: ${selectedAlbum!.id}'),
                       Text('Title: ${selectedAlbum!.title}'),
+                      const SizedBox(height: 12),
+
+                      // Delete button
+                      ElevatedButton(
+                        onPressed: isDeleting ? null : deleteAlbum,
+                        child: Text(
+                          isDeleting ? 'Deleting...' : 'Delete Album',
+                        ),
+                      ),
                     ],
                   ),
           ),
@@ -119,8 +172,6 @@ class _AlbumPageState extends State<AlbumPage> {
                           child: Text('${album.id}'),
                         ),
                         title: Text(album.title),
-
-                        // Select an album when tapped
                         onTap: () {
                           setState(() {
                             selectedAlbum = album;
