@@ -32,6 +32,9 @@ class AlbumPage extends StatefulWidget {
 class _AlbumPageState extends State<AlbumPage> {
   late Future<List<Album>> futureAlbums;
 
+  // Stores the currently selected album
+  Album? selectedAlbum;
+
   @override
   void initState() {
     super.initState();
@@ -58,49 +61,83 @@ class _AlbumPageState extends State<AlbumPage> {
       appBar: AppBar(
         title: const Text('Album Explorer'),
       ),
-      body: FutureBuilder<List<Album>>(
-        future: futureAlbums,
-        builder: (context, snapshot) {
-
-          // Loading state
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          // Error state
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error: ${snapshot.error}',
-              ),
-            );
-          }
-
-          // Success state
-          if (snapshot.hasData) {
-            final albums = snapshot.data!;
-
-            return ListView.builder(
-              itemCount: albums.length,
-              itemBuilder: (context, index) {
-                final album = albums[index];
-
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text('${album.id}'),
+      body: Column(
+        children: [
+          // Selected album details
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            color: Colors.blue.shade50,
+            child: selectedAlbum == null
+                ? const Text(
+                    'No Album Selected',
+                    style: TextStyle(fontSize: 18),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Selected Album',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text('Album ID: ${selectedAlbum!.id}'),
+                      Text('Title: ${selectedAlbum!.title}'),
+                    ],
                   ),
-                  title: Text(album.title),
+          ),
+
+          // Album list
+          Expanded(
+            child: FutureBuilder<List<Album>>(
+              future: futureAlbums,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+
+                if (snapshot.hasData) {
+                  final albums = snapshot.data!;
+
+                  return ListView.builder(
+                    itemCount: albums.length,
+                    itemBuilder: (context, index) {
+                      final album = albums[index];
+
+                      return ListTile(
+                        leading: CircleAvatar(
+                          child: Text('${album.id}'),
+                        ),
+                        title: Text(album.title),
+
+                        // Select an album when tapped
+                        onTap: () {
+                          setState(() {
+                            selectedAlbum = album;
+                          });
+                        },
+                      );
+                    },
+                  );
+                }
+
+                return const Center(
+                  child: Text('No albums found'),
                 );
               },
-            );
-          }
-
-          return const Center(
-            child: Text('No albums found'),
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
