@@ -27,3 +27,21 @@ I used setState() to update the screen whenever a different album is selected. T
 Using a state variable allows the application to change what is displayed on the same screen without opening a completely different page.
 
 In a traditional app, moving between pages usually involves navigation. In this phase, I used setState() to update the selected album details while keeping the album list visible.
+
+----------------
+
+# Phase 3: The Delete Operation
+
+## What I Accomplished
+
+In this phase, I added a Delete Album button to my Flutter application. When an album is selected, the user can click the button to send a DELETE request to the JSONPlaceholder API.
+
+I used the selected album's ID to identify which album to delete. I also added a status code check to make sure the request was successful before updating the screen.
+
+After a successful response, the selected album is cleared and the application returns to the list view.
+
+## Journal Prompt
+
+Checking the status code is important because it tells the application whether the server successfully processed the delete request.
+
+If I updated the screen without checking the response, the application might tell the user an album was deleted even if the request failed. Checking the response helps prevent incorrect information from being displayed.
