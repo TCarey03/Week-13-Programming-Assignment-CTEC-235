@@ -45,3 +45,23 @@ After a successful response, the selected album is cleared and the application r
 Checking the status code is important because it tells the application whether the server successfully processed the delete request.
 
 If I updated the screen without checking the response, the application might tell the user an album was deleted even if the request failed. Checking the response helps prevent incorrect information from being displayed.
+
+----------------
+
+# Phase 4: Validation & Reflection
+
+## What I Accomplished
+
+In this phase, I tested my Album Explorer application to make sure all the main features worked correctly.
+
+I tested fetching the album list, selecting an album, viewing its details, and deleting a selected album.
+
+I also checked the loading and error states to make sure the application could handle waiting for the server and problems with internet requests.
+
+## Journal Prompt
+
+While testing my application, I checked that the album list loaded correctly and that selecting an album displayed the correct information.
+
+I also tested the delete button to make sure it sent a request and returned the application to the list view.
+
+One thing I learned is that JSONPlaceholder simulates deleting an album but does not permanently remove it from the server. Overall, this assignment helped me understand how Flutter communicates with an API using HTTP requests and how to display server data in an application.
